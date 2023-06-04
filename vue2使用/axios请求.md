@@ -34,7 +34,7 @@ import axios from 'axios'
 ```
  axios.post('url链接',{
      	需要传递的数据
-     }.{
+     },{
      headers:{
      	在header头里边传递的数据
      }
