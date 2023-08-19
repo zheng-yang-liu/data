@@ -1,3 +1,5 @@
+
+
 # 第一章 VUE基础
 
 ## 一、关于VUE
@@ -42,8 +44,11 @@ VUE不支持IE8及以下版本。
 
 ```
 var vm = new Vue({
-  // 选项
+  el:选择器,
+  data:{}
 })
+el:指定数据渲染的范围。
+data:数据源，定义对象的属性。
 ```
 
 示例：
@@ -166,6 +171,7 @@ new Vue({
 });
 </script>
 </body>
+
 </html>
 ```
 
@@ -233,19 +239,19 @@ Vue.js 都提供了完全的 JavaScript 表达式支持。
 </head>
 <body>
 <div id="app">
-	{{5+5}}<br>
+	{{5+5}}<br>{{z}}
 	{{ ok ? 'YES' : 'NO' }}<br>
 	{{ message.split('').reverse().join('') }}
 	<div v-bind:id="'list-' + id">表达式测试</div>
 </div>
-	
 <script>
 new Vue({
   el: '#app',
   data: {
 	ok: true,
     message: 'VUE Test',
-	id : 1
+	id : 1,
+	z:36+2
   }
 })
 </script>
@@ -327,6 +333,31 @@ new Vue({
 <form v-on:submit.prevent="onSubmit"></form>
 ```
 
+```
+<div id="app">
+<form v-on:submit.prevent="onSubmit" action="b.html">
+	<input type="text" name="useranme"  />
+	<input type="submit" value="提交" />
+	<div>{{hint}}</div>
+</form>
+</div>
+<script>
+	new Vue({
+	el:"#app",
+	data:{
+	hint:''
+},
+	methods:{
+		onSubmit:function(){
+			this.hint="您的数据不合法!"
+		}
+	}
+});
+</script>
+```
+
+
+
 #### 8、用户输入
 
 在 input 输入框中我们可以使用 v-model 指令来实现双向数据绑定：
@@ -342,7 +373,7 @@ new Vue({
 <body>
 <div id="app">
     <p>{{ message }}</p>
-    <input v-model="message">
+    <input type="text"v-model:value="message">
 </div>
 	
 <script>
@@ -383,7 +414,7 @@ new Vue({
   data: {
     message: 'Hello World!'
   },
-  methods: {
+  methods: {//方法
     reverseMessage: function () {
       this.message = this.message.split('').reverse().join('')
     }
@@ -427,12 +458,12 @@ Vue.js 允许你自定义过滤器，被用作一些常见的文本格式化。�
 new Vue({
   el: '#app',
   data: {
-	message: 'abc.com'
+	message: 'abc.com' //Abc.com
   },
   filters: {//过滤器
     capitalize: function (value) {
       if (!value) return ''
-      value = value.toString()
+      value = value.toString() //toString()将前面的对象转换为字符串对象
       return value.charAt(0).toUpperCase() + value.slice(1)
     }
   }
@@ -477,3 +508,846 @@ Vue.js 为两个最为常用的指令提供了特别的缩写：
 <!-- 缩写 -->
 <a @click="doSomething"></a>
 ```
+
+## 三、Vue.js 条件语句
+
+### 一）条件判断
+
+### 1、v-if
+
+在元素 和 template 中使用 v-if 指令。v-if值可以是属性、表达式(值只能是true或false)，或者true或false。
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - if</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <p v-if="seen">现在你看到我了</p>
+    <template v-if="ok"><!--<template>是模板占位符，标签本身不会被渲染-->
+      <h1>VUE教程</h1>
+      <p>学的不仅是技术，更是梦想！</p>
+    </template>
+</div>
+    
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    seen: true,
+    ok: true
+  }
+})
+</script>
+</body>
+</html>
+```
+
+#### 2、v-else
+
+配合v-if使用。
+
+```
+<div id="app">
+    <div v-if="Math.random() > 0.5">
+      Sorry
+    </div>
+    <div v-else>
+      Not sorry
+    </div>
+</div>
+    
+<script>
+new Vue({
+  el: '#app'
+})
+</script>
+```
+
+#### 3、v-else-if
+
+用作 v-if 的 else-if 块。可以链式的多次使用：
+
+```
+<div id="app">
+    <div v-if="type === 'A'">
+      A
+    </div>
+    <div v-else-if="type === 'B'">
+      B
+    </div>
+    <div v-else-if="type === 'C'">
+      C
+    </div>
+    <div v-else>
+      Not A/B/C
+    </div>
+</div>
+    
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    type: 'C'
+  }
+})
+</script>
+```
+
+#### 4、v-show
+
+v-show 指令指令来根据条件展示元素
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - v-show </title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+    <h1 v-show="ok">Hello!</h1>
+</div>
+	
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    ok: true
+  }
+})
+</script>
+</body>
+</html>
+```
+
+## 四、Vue.js 循环语句
+
+vue.js使用v-for来实现渲染的循环。
+
+### 一）源数据数组使用v-for
+
+循环使用 v-for 指令，要以 **site in sites** 形式的特殊语法， sites 是源数据数组， site 是数组元素迭代的别名。
+
+```
+<div id="app">
+  <ol>
+    <li v-for="site in sites">
+      {{ site.name }}
+    </li>
+  </ol>
+</div>
+ 
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    sites: [
+      { name: 'sogou' },
+      { name: 'Google' },
+      { name: 'Taobao' }
+    ]
+  }
+})
+</script>
+```
+
+### 二）模板中使用 v-for
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - v-for</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <ul>
+    <template v-for="site in sites">
+      <li>{{ site.name }}</li>
+      <li>--------------</li>
+    </template>
+  </ul>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    sites: [
+      { name: 'sohu' },
+      { name: 'Google' },
+      { name: 'Taobao' }
+    ]
+  }
+})
+</script>
+</body>
+</html>
+```
+
+### 三）v-for 迭代对象属性
+
+v-for 可以通过对象的属性来迭代数据。
+
+语法 格式：(v-for="(value,key,index) in 对象名")  
+
+前面的值value,key,index可以取其中的一部分。第一个参数是值，第二个是键，第三个是索引，变量可以不是value,key,index.
+
+```
+<div id="app">
+  <ul>
+    <li v-for="(value,key,index) in object">
+    {{key}}-{{ value }}
+    </li>
+  </ul>
+</div>
+ 
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    object: {
+      name: 'VUE教程',
+      url: 'http://www.abc.com',
+      slogan: '学的不仅是技术，更是梦想！'
+    }
+  }
+})
+</script>
+```
+
+### 四）v-for 迭代整数
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - v-for 迭代整数</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <ul>
+    <li v-for="n in 10">
+     {{ n }}
+    </li>
+  </ul>
+</div>
+
+<script>
+new Vue({
+  el: '#app'
+})
+</script>
+</body>
+</html>
+```
+
+## 五、Vue.js 计算属性
+
+### 一）计算属性: computed
+
+```
+语法：computed:{}  //在模板中调用时直接写属性名即可。
+```
+
+功能：可以用于获取或设置属性。
+
+### 二） 示例
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 -字符串反转</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+  {{ message.split('').reverse().join('') }}
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    message: 'I like VUE!'
+  }
+})
+</script>
+</body>
+</html>
+```
+
+或者：
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - 计算属性</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <p>原始字符串: {{ message }}</p>
+  <p>计算后反转字符串: {{ reversedMessage }}</p>
+  <p>{{asd()}}</p>
+</div>
+
+<script>
+var vm = new Vue({
+  el: '#app',
+  data: {
+    message: 'I like VUE!'
+  },
+  methods:{
+  	asd:function(){
+  	
+  		return "hello"
+  	}
+  	
+  },
+  computed: {
+    // 计算属性的 getter
+    reversedMessage: function () {
+      // `this` 指向 vm 实例
+      return this.message.split('').reverse().join('')
+    }
+  }
+})
+</script>
+</body>
+</html>
+实例 2 中声明了一个计算属性 reversedMessage 。
+提供的函数将用作属性 vm.reversedMessage 的 getter 。
+vm.reversedMessage 依赖于 vm.message，在 vm.message 发生改变时，vm.reversedMessage 也会更新。
+```
+
+## 三）computed 和 methods区别
+
+一般来说可以使用methods替换computed,但两者也有如下区别：
+
+```
+1、computed（计算属性）是带缓存的，需要依赖数据发生改变，才会重新进行计算，否则直接返回之前的计算结果，而methods里的函数（即实例方法）在每次调用时候都要执行。
+2、在HTML的插值里调用方式不一样，computed的调用像属性一样访问，methods定义的成员必须以函数的形式调用。
+3、computed中的成员可以只定义一个函数作为属性，也可以定义get/set变成可读写的属性，这点是methods不可以做到的。
+```
+
+### 四）setter
+
+computed 属性默认只有 getter ,在需要时你也可以提供一个 setter 
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - setter </title>
+<script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <p>{{ site }}</p>
+</div>
+
+<script>
+var vm = new Vue({
+  el: '#app',
+  data: {
+	name: 'Google',
+	url: 'http://www.google.com'
+  },
+  computed: {
+    site: {
+      // getter
+      get: function () {
+        return this.name + ' ' + this.url
+      },
+      // setter
+      set: function (newValue) {
+        var names = newValue.split(' ')
+        this.name = names[0]
+        this.url = names[names.length - 1]
+      }
+    }
+  }
+})
+// 调用 setter， vm.name 和 vm.url 也会被对应更新
+vm.site = 'abc软件 http://www.abc.com';
+document.write('name: ' + vm.name);
+document.write('<br>');
+document.write('url: ' + vm.url);
+</script>
+</body>
+</html>
+```
+
+## 六、属性监听
+
+### 一）概念
+
+监听就是对内置对象的状态或者属性变化进行监听并且做出反应的响应，监听属性，意思就是可以监视其他数据的变化。
+
+### 二）应用方法
+
+1、使用watch配置项，在配置项里面写上要监视的属性
+
+每次属性值的变化都会触发handler函数回调，也可以监视计算属性的变化。
+
+2、可以使用实例对象的$watch方法在外部监听属性的变化。
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Vue 测试实例 - 菜鸟教程(runoob.com)</title>
+	<script src="https://cdn.staticfile.org/vue/2.4.2/vue.min.js"></script>
+</head>
+   <body>
+      <div id = "computed_props">
+         千米 : <input type = "text" v-model = "kilometers">
+         米 : <input type = "text" v-model = "meters">
+      </div>
+	   <p id="info"></p>
+      <script type = "text/javascript">
+         var vm = new Vue({
+            el: '#computed_props',
+            data: {
+               kilometers : 0,
+               meters:0
+            },
+            methods: {
+            },
+            computed :{
+            },
+            watch : {
+               kilometers:function() {
+                  this.meters = this.kilometers * 1000
+               },
+               meters : function () {
+                  
+                  this. kilometers =this.meters/1000;
+               }
+            }
+         });
+         // $watch 是一个实例方法
+		vm.$watch('kilometers', function (newValue, oldValue) {
+			// 这个回调将在 vm.kilometers 改变后调用
+		    document.getElementById ("info").innerHTML = "修改前值为: " + oldValue + "，修改后值为: " + newValue;
+		})
+      </script>
+   </body>
+</html>
+```
+
+## 七、样式绑定
+
+class 与 style 是 HTML 元素的属性，用于设置元素的样式，我们可以用 v-bind 来设置样式属性。
+
+Vue.js v-bind 在处理 class 和 style 时， 表达式的结果类型除了字符串之外，还可以是对象或数组。
+
+### 一）class 属性绑定
+
+#### 1、为 v-bind:class 设置一个对象，从而动态的切换 class
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - v-bind:class</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<style>
+.active {
+	width: 100px;
+	height: 100px;
+	background: green;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div v-bind:class="{ 'active': isActive }"></div>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    isActive: true
+  }
+})
+</script>
+</body>
+</html>
+```
+
+#### 2、在对象中传入更多属性用来动态切换多个 class 
+
+```
+语法格式：v-bind:class={样式表选择器名:属性名,样式表选择器名:属性名,...}
+```
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - 动态切换多个 class</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<style>
+.active {
+	width: 100px;
+	height: 100px;
+	background: green;
+}
+.text-danger {
+	background: red;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div v-bind:class="{ 'active': isActive, 'text-danger': hasError }">
+  </div>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    isActive: true,
+	hasError: true
+  }
+})
+</script>
+</body>
+</html>
+```
+
+#### 3、直接绑定数据里的一个对象
+
+1）v-bind:class="data子对象名（data的一个属性名）"
+
+2）data子对象书写格式：
+
+​		键名:{样式表名1：布尔值，样式表名2：布尔值,...}
+
+注：样式表名中杠（-）需要给键名加单引号。
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - 直接绑定数据里的对象</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<style>
+.active {
+	width: 100px;
+	height: 100px;
+	background: green;
+}
+.text-danger {
+	background: red;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div v-bind:class="classObject"></div>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    classObject: {
+      active: true,
+      'text-danger': true
+    }
+  }
+})
+</script>
+</body>
+</html>
+```
+
+#### 4、绑定返回对象的计算属性
+
+```
+1、语法：v-bind:class=计算属性
+2、计算属性返回一个对象{键名（样式表）:比较或逻辑表达 }
+```
+
+
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - 绑定返回对象的计算属性</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<style>
+.base {
+  width: 100px;
+  height: 100px;
+}
+.active {
+  background: green;
+}
+.text-danger {
+  background: red;
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div v-bind:class="classObject"></div>
+</div>
+<script>
+
+new Vue({
+  el: '#app',
+  data: {
+    isActive: true,
+    error: {
+      value: true,
+      type: 'fatal'
+    }
+  },
+  computed: {
+    classObject: function () {
+      return {
+  		base: true,
+        active: this.isActive && !this.error.value,
+        'text-danger': this.error.value && this.error.type === 'fatal',
+      }
+    }
+  }
+})
+</script>
+</body>
+</html>
+```
+
+#### 5、数组语法
+
+可以把一个数组传给 **v-bind:class** 
+
+```
+语法：v-bind:class=[属性名]
+在数据中，属性对应的值是样式表的名。
+```
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - 数组值</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<style>
+.active {
+	width: 100px;
+	height: 100px;
+	background: green;
+}
+.text-danger {
+	background: red;
+}
+</style>
+</head>
+<body>
+<div id="app">
+	<div v-bind:class="[activeClass, errorClass]"></div>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    activeClass: 'active',
+    errorClass: 'text-danger'
+  }
+})
+</script>
+</body>
+</html>
+```
+
+#### 6、使用三元表达式来切换列表中的 class
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - 三元表达式来切换列表</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+<style>
+.text-danger {
+	width: 100px;
+	height: 100px;
+	background: red;
+}
+.active {
+	width: 100px;
+	height: 100px;
+	background: green;
+}
+</style>
+</head>
+<body>
+<div id="app">
+	<div v-bind:class="[errorClass ,isActive ? activeClass : '']"></div>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    isActive: true,
+	activeClass: 'active',
+    errorClass: 'text-danger'
+  }
+})
+</script>
+</body>
+</html>
+```
+
+### 二）style(内联样式)
+
+1、在 **v-bind:style** 直接设置样式
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - 直接设置样式</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+	<div v-bind:style="{ color: activeColor, fontSize: fontSize + 'px' }">直接设置样式</div>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    activeColor: 'green',
+	fontSize: 30
+  }
+})
+</script>
+</body>
+</html>
+```
+
+#### 2、直接绑定到一个样式对象，让模板更清晰
+
+```
+v-bind:style="data里的属性名"，该属性的属性值是一个样式表对象
+```
+
+
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - 直接绑定到一个样式对象</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <div v-bind:style="styleObject">绑定到一个样式对象</div>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    styleObject: {
+      color: 'green',
+      fontSize: '30px'
+    }
+  }
+})
+</script>
+</body>
+</html>
+```
+
+#### 3、使用数组将多个样式对象应用到一个元素上
+
+```
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Vue 测试实例 - 使用数组将多个样式对象应用到一个元素上</title>
+<script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
+</head>
+<body>
+<div id="app">
+  <div v-bind:style="[baseStyles, overridingStyles]">style绑定</div>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    baseStyles: {
+      color: 'green',
+      fontSize: '30px'
+    },
+	overridingStyles: {
+      'font-weight': 'bold'
+    }
+  }
+})
+</script>
+</body>
+</html>
+```
+
+
+
+---
+
+练习：
+
+1、已知接受到的数据是：
+
+{
+	boss:"zhangsheng",
+	pass:["123","333","666","567","886","765","333","999"]
+	}
+
+请输出8个li,每个li中的账户是zhangsheng1...zhangsheng8,并且其密码与pass数组中的值相同。
+
+2、生成一个10行三列的表格，并且表格要隔行换色。
+
+3、在段落标签中插入10张图片。
+
+4、单击超链接出现菜单。
